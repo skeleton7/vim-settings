@@ -1,0 +1,15 @@
+-startup
+plugins/org.eclipse.equinox.launcher_1.2.0.v20110502.jar
+--launcher.library
+plugins/org.eclipse.equinox.launcher.win32.win32.x86_1.1.100.v20110502
+-product
+org.eclipse.epp.package.jee.product
+--launcher.XXMaxPermSize
+256m
+--launcher.defaultAction
+openFile
+-vmargs
+-Dosgi.requiredJavaVersion=1.5
+-Xms40m
+-Xmx1536m
+-javaagent:dropins/MergeDoc/eclipse/plugins/jp.sourceforge.mergedoc.pleiades/pleiades.jar

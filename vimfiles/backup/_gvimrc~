@@ -1,0 +1,373 @@
+" vim:set ts=8 sts=2 sw=2 tw=0: (この行に関しては:help modelineを参照)
+"
+" An example for a Japanese version gvimrc file.
+" 日本語版のデフォルトGUI設定ファイル(gvimrc)
+"
+" Last Change: 27-Sep-2011.
+" Maintainer: MURAOKA Taro
+"
+" 解説:
+" このファイルにはVimの起動時に必ず設定される、GUI関連の設定が書かれていま
+" す。編集時の挙動に関する設定はvimrcに書かかれています。
+"
+" 個人用設定は_gvimrcというファイルを作成しそこで行ないます。_gvimrcはこの
+" ファイルの後に読込まれるため、ここに書かれた内容を上書きして設定することが
+" 出来ます。_gvimrcは$HOMEまたは$VIMに置いておく必要があります。$HOMEは$VIM
+" よりも優先され、$HOMEでみつかった場合$VIMは読込まれません。
+"
+" 管理者向けに本設定ファイルを直接書き換えずに済ませることを目的として、サイ
+" トローカルな設定を別ファイルで行なえるように配慮してあります。Vim起動時に
+" サイトローカルな設定ファイル($VIM/gvimrc_local.vim)が存在するならば、本設
+" 定ファイルの主要部分が読み込まれる前に自動的に読み込みます。
+"
+" 読み込み後、変数g:gvimrc_local_finishが非0の値に設定されていた場合には本設
+" 定ファイルに書かれた内容は一切実行されません。デフォルト動作を全て差し替え
+" たい場合に利用して下さい。
+"
+" 参考:
+" :help gvimrc
+" :echo $HOME
+" :echo $VIM
+" :version
+
+"---------------------------------------------------------------------------
+" サイトローカルな設定($VIM/gvimrc_local.vim)があれば読み込む。読み込んだ後
+" に変数g:gvimrc_local_finishに非0な値が設定されていた場合には、それ以上の設
+" 定ファイルの読込を中止する。
+if 1 && filereadable($VIM . '/gvimrc_local.vim')
+source $VIM/gvimrc_local.vim
+if exists('g:gvimrc_local_finish') && g:gvimrc_local_finish != 0
+finish
+endif
+endif
+
+"---------------------------------------------------------------------------
+" ユーザ優先設定($HOME/.gvimrc_first.vim)があれば読み込む。読み込んだ後に変
+" 数g:gvimrc_first_finishに非0な値が設定されていた場合には、それ以上の設定
+" ファイルの読込を中止する。
+if 0 && exists('$HOME') && filereadable($HOME . '/.gvimrc_first.vim')
+unlet! g:gvimrc_first_finish
+source $HOME/.gvimrc_first.vim
+if exists('g:gvimrc_first_finish') && g:gvimrc_first_finish != 0
+finish
+endif
+endif
+
+"---------------------------------------------------------------------------
+" (試験中)
+" Vimをモードレスな普通のエディタに変身させてしまうCreamを手軽に利用するため
+" の設定。vimrc参照。
+if 1 && exists('g:cream_enabled') && g:cream_enabled != 0
+if filereadable($VIM.'/cream/_gvimrc')
+source $VIM/cream/_gvimrc
+endif
+finish
+endif
+
+"---------------------------------------------------------------------------
+" Bram氏の提供する設定例をインクルード (別ファイル:vimrc_example.vim)。これ
+" 以前にg:no_gvimrc_exampleに非0な値を設定しておけばインクルードしない。
+"if 1 && (!exists('g:no_gvimrc_example') || g:no_gvimrc_example == 0)
+" source $VIMRUNTIME/gvimrc_example.vim
+"endif
+
+"---------------------------------------------------------------------------
+" フォント設定:
+"
+if has('win32')
+" Windows用
+set guifont=MS_Gothic:h16:cSHIFTJIS
+"set guifont=MS_Mincho:h12:cSHIFTJIS
+" 行間隔の設定
+set linespace=1
+elseif has('mac')
+set guifont=Osaka－等幅:h14
+elseif has('xfontset')
+" UNIX用 (xfontsetを使用)
+set guifontset=a14,r14,k14
+endif
+
+"---------------------------------------------------------------------------
+" エンコーディング設定
+" fileencoding : デフォルト(新規作成時 etc.)に使用する文字コード
+" fileencodings : 自動判別対象とする文字コード
+"---------------------------------------------------------------------------
+" cp20932:euc-jp
+set fileencoding=japan
+"set fileencoding=euc-jp
+set fileencodings+=cp20932,iso-2022-jp,utf-8,ucs-2,cp932,euc-jp,sjis,eucjp-ms
+
+"---------------------------------------------------------------------------
+" タグファイル自動読み込みスクリプト（試験中）
+":source $VIM\scripts\MultipleSearch.vim
+":source $VIM\scripts\TortoiseSVN.vim
+
+"---------------------------------------------------------------------------
+" ウインドウに関する設定:
+"
+
+" ウインドウの位置( X座標 Y座標 )
+"winpos 0 0
+" ウインドウの幅
+"set columns=214
+" ウインドウの高さ
+" set lines=77
+
+" 最大化状態で起動
+au GUIEnter * simalt ~x
+
+" コマンド行数
+set cmdheight=1
+
+" シフト幅を4に設定
+set shiftwidth=4
+
+" タブ幅を設定
+set tabstop=4
+
+" TABキーで挿入される空白数
+set softtabstop=4
+
+" 行番号表示をON
+"set nu
+
+"---------------------------------------------------------------------------
+" 日本語入力に関する設定:
+"
+if has('multi_byte_ime') || has('xim')
+" IME ON時のカーソルの色を設定
+highlight CursorIM guibg=Purple guifg=NONE
+" 挿入モード・検索モードでのデフォルトのIME状態設定
+set iminsert=0 imsearch=0
+if has('xim') && has('GUI_GTK')
+" XIMの入力開始キーを設定:
+" 下記の s-space はShift+Spaceの意味でkinput2+canna用設定
+"set imactivatekey=s-space
+endif
+" 挿入モードでのIME状態を記憶させない場合、次行のコメントを解除
+"inoremap :set iminsert=0
+endif
+
+"---------------------------------------------------------------------------
+" マウスに関する設定:
+"
+" 解説:
+" mousefocusは幾つか問題(一例:ウィンドウを分割しているラインにカーソルがあっ
+" ている時の挙動)があるのでデフォルトでは設定しない。Windowsではmousehide
+" が、マウスカーソルをVimのタイトルバーに置き日本語を入力するとチラチラする
+" という問題を引き起す。
+"
+" どのモードでもマウスを使えるようにする
+"set mouse=a
+" マウス機能はオフ
+set mouse-=a
+" マウスの移動でフォーカスを自動的に切替えない (mousefocus:切替る)
+set nomousefocus
+" 入力時にマウスポインタを隠す (nomousehide:隠さない)
+set mousehide
+" ビジュアル選択(D&D他)を自動的にクリップボードへ (:help guioptions_a)
+"set guioptions+=a
+" ビジュアルモードで反転させた文字列が自動的にクリップボードに入るのを防ぐ
+set guioptions-=a
+
+
+"---------------------------------------------------------------------------
+" メニューに関する設定:
+"
+" 解説:
+" "M"オプションが指定されたときはメニュー("m")・ツールバー("T")供に登録され
+" ないので、自動的にそれらの領域を削除するようにした。よって、デフォルトのそ
+" れらを無視してユーザが独自の一式を登録した場合には、それらが表示されないと
+" いう問題が生じ得る。しかしあまりにレアなケースであると考えられるので無視す
+" る。
+"
+if &guioptions =~# 'M'
+let &guioptions = substitute(&guioptions, '[mT]', '', 'g')
+endif
+
+" ツールバー、メニューバーのON/OFF
+set guioptions-=T " ツールバーをOFF
+set guioptions-=m " メニューバーをOFF
+"set notitle " タイトルバーのOFF
+
+
+"---------------------------------------------------------------------------
+" その他、見栄えに関する設定:
+
+" !!! syntax enableよりも先に宣言する必要のあるもの !!!
+" Copyright (C) 2005 KaoriYa/MURAOKA Taro
+" 「背景は暗い」と明示的に指定
+":set background=dark
+
+
+" ハイライトをONにする
+:syntax enable
+"
+" 検索文字列をハイライトしない(_vimrcではなく_gvimrcで設定する必要がある)
+"set nohlsearch
+
+" オートインデントを設定
+set autoindent
+
+" インクリメンタルサーチをＯＮ
+set incsearch
+
+" ファイルタイプの自動判別、プラグインファイルの利用、インデントファイル利用をＯＮ
+filetype plugin indent on
+
+" インデントの方法を設定
+set cinoptions=:0
+
+" TAB文字を可視化
+":set list "こっちだと全てのTABが表示されて見づらいらしい
+:set listchars=tab:>-,trail:-
+
+" TAB文字の色
+highlight SpecialKey guifg=darkblue
+" TAB文字を何で表示するか
+set listchars=tab:>_
+" TAB文字の表示
+"set list
+
+" ツールチップの表示をOFF
+set guioptions-=T
+
+" マウスの挙動をWindows方式に設定（おそらくデフォルトでもWindows方式だろうけど)
+behave mswin
+
+" マウスでの選択モードでの作業を許可（おそらくデフォルトでも許可されているはずだが）
+set selectmode+=mouse
+
+" コメント行での改行で次の行も自動的にコメントされるのをOFF
+set fo-=r
+" 移動不可能な領域へ移動し様とした際の警告をOFF
+" set visualbell " ビープ音の変わりに画面をフラッシュさせる
+set vb t_vb= " ビープ音もフラッシュもOFF
+
+
+" バックアップファイルは作らない
+"set nobackup
+" バックアップファイルを作成するディレクトリを指定
+set backupdir=$HOME/vimfiles/backup
+
+" スワップファイルを作成するディレクトリを指定
+set directory=$HOME/vimfiles/swaps
+
+" 検索時に大文字小文字を区別しない
+set ignorecase
+
+" 入力時の対応する括弧の表示時間(1/10秒単位)
+set matchtime=2
+
+" 現在開いているファイルのディレクトリを常にカレントとする
+:au BufEnter * execute ':lcd ' . expand("%:p:h")
+":au BufEnter * echomsg '####BufEnter####'. expand("%:p:h")
+":au BufAdd * echomsg '####BufAdd####'. expand("%:p:h")
+":au BufNewFile * echomsg '####BufNewFile####'. expand("%:p:h")
+":au BufCreate * echomsg '####BufCreate####'. expand("%:p:h")
+":au BufWinEnter * echomsg '####BufWinEnter####'. expand("%:p:h")
+":au BufNew * echomsg '####BufNew####'. expand("%:p:h")
+"augroup BufferAu
+" autocmd!
+" " カレントディレクトリを自動的に移動
+" autocmd BufNewFile,BufRead,BufEnter * if isdirectory(expand("%:p:h")) && bufname("%") !~ "NERD_tree" | cd %:p:h | endif
+"augroup END
+
+" 画面端でのおりかえしをOFF
+set nowrap
+
+" 「ファイル終端まで検索後自動的にファイル先頭から検索」をしない
+set nowrapscan
+
+" コピー、カット等の操作をWindowsと互換にする
+" source $VIMRUNTIME/mswin.vim
+
+" 次回起動時には検索のハイライトをオフ
+set viminfo-=x
+
+" バックスペースでインデントや改行を削除
+set backspace=indent,eol,start
+
+" ハイライトの方法の色を指定
+"highlight Normal guifg=white guibg=Black " 通常の文字
+"highlight LineNr guifg=lightmagenta guibg=Black " 行番号
+"highlight Search guifg=white guibg=blue " 検索ヒット
+"highlight IncSearch guifg=white guibg=blue " インクリメンタルサーチヒット
+"highlight Visual guifg=white guibg=Red " 範囲選択
+"highlight Cursor guifg=Black guibg=Green gui=bold
+"---------------------------------------------------------------------------
+" カラーテーマ設定
+"
+" 自分で作ったカラーテーマを有効にする
+:colorscheme MyColor
+
+
+"---------------------------------------------------------------------------
+" セッションファイルに関する設定
+" デフォルトは：blank,buffers,curdir,folds,help,options,winsize
+
+" ウインドウもサイズも復元する
+set sessionoptions+=resize
+" ヘルプの表示もなし
+set sessionoptions-=help
+
+" カレント行ハイライト
+"set cursorline
+
+
+"---------------------------------------------------------------------------
+" 印刷に関する設定:
+"
+" 注釈:
+" 印刷はGUIでなくてもできるのでvimrcで設定したほうが良いかもしれない。この辺
+" りはWindowsではかなり曖昧。一般的に印刷には明朝、と言われることがあるらし
+" いのでデフォルトフォントは明朝にしておく。ゴシックを使いたい場合はコメント
+" アウトしてあるprintfontを参考に。
+"
+" 参考:
+" :hardcopy
+" :help 'printfont'
+" :help printing
+"
+" 印刷用フォント
+if has('printer')
+if has('win32')
+set printfont=MS_Mincho:h16:cSHIFTJIS
+"set printfont=MS_Gothic:h12:cSHIFTJIS
+endif
+endif
+
+"---------------------------------------------------------------------------
+" マニュアルページを常にダウンロードしておく
+source $VIMRUNTIME/ftplugin/man.vim
+
+
+"---------------------------------------------------------------------------
+" 辞書ファイルの設定
+autocmd FileType c :set dictionary=$VIM\dictionary\dictionay_c.dat
+autocmd FileType perl :set dictionary=$VIM\dictionary\dictionay_perl.dat
+autocmd FileType ruby :set dictionary=$VIM\dictionary\dictionary_ruby.dat
+
+"---------------------------------------------------------------------------
+" tagファイルを自動認識
+set tags=tags;/
+autocmd FileType ruby :set tags=$VIM\tags\tags_ruby;tags;/
+autocmd FileType cobol :let cobol_legacy_code=1
+
+
+"---------------------------------------------------------------------------
+" changelo関連
+"let g:changelog_timeformat="%Y-%m-%d:%T"
+let g:changelog_timeformat="%Y-%m-%d %t %T"
+let g:changelog_username="bando"
+
+"---------------------------------------------------------------------------
+" 識別子の使用しているところを探すスクリプト
+map _g :let efsave=&eflet &ef=tempname()exe ':!grep -n -w "" *.[cChH] *.cc *.cpp *.txt >'.&ef:cf:exe ":!rm ".&ef:let &ef=efsaveunlet efsave:cc
+
+
+" 検索ヒットをたぐる
+map <C-N> :cn<CR>
+map <C-P> :cp<CR>
+
+map <F12> :set guifont=*<CR>
